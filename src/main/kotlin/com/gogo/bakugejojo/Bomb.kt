@@ -1,5 +1,14 @@
 package com.gogo.bakugejojo
 
-import java.util.*
+import java.time.LocalDateTime
 
-class Bomb(val Deployed: Date, val duration: Int) {}
+class Bomb(
+        val deployed: LocalDateTime,
+        val duration: Int,
+        val x: Int,
+        val y: Int
+) {
+    companion object {
+        const val defaultFuse = 1000
+    }
+}

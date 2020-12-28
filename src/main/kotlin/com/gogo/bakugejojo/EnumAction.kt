@@ -1,3 +1,5 @@
 package com.gogo.bakugejojo
 
-enum class EnumAction {}
+enum class EnumAction {
+    Move, DeployBomb
+}
