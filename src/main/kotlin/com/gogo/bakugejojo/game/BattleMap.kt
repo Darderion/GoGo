@@ -1,4 +1,4 @@
-package com.gogo.bakugejojo
+package com.gogo.bakugejojo.game
 
 class BattleMap(val name: String = "defaultMapName", private val design: Array<Array<EnumTile>>) {
 

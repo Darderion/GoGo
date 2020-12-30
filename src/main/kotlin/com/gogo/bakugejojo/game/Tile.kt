@@ -1,4 +1,4 @@
-package com.gogo.bakugejojo
+package com.gogo.bakugejojo.game
 
 class Tile(
         val id: EnumTile = EnumTile.Empty) {

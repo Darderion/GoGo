@@ -1,4 +1,4 @@
-package com.gogo.bakugejojo
+package com.gogo.bakugejojo.game
 
 class BattleField(
         val map: BattleMap,

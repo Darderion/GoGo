@@ -1,3 +1,3 @@
-package com.gogo.bakugejojo
+package com.gogo.bakugejojo.game
 
 class Game(val battlefields: List<BattleField>)

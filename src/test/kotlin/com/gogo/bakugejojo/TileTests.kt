@@ -1,5 +1,7 @@
 package com.gogo.bakugejojo
 
+import com.gogo.bakugejojo.game.EnumTile
+import com.gogo.bakugejojo.game.Tile
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
 

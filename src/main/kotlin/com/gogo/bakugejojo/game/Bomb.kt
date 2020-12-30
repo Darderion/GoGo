@@ -1,4 +1,4 @@
-package com.gogo.bakugejojo
+package com.gogo.bakugejojo.game
 
 import java.time.LocalDateTime
 
