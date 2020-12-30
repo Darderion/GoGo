@@ -1,0 +1,17 @@
+
+#battleGround {
+    display: grid;
+    width: 80%;
+    height: 500px;
+    margin: 1% auto auto auto;
+    outline: 2px solid black;
+}
+
+#battleGround div {
+    outline: 1px solid black;
+}
+
+.tile {
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+}
