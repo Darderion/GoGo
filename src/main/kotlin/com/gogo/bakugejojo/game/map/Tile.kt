@@ -1,7 +1,8 @@
-package com.gogo.bakugejojo.game
+package com.gogo.bakugejojo.game.map
 
 class Tile(
-        val id: EnumTile = EnumTile.Empty) {
+        val id: EnumTile = EnumTile.Empty
+) {
     private var neighbors: Array<Tile> = arrayOf()
 
     fun setNeighbors(neighbors: Array<Tile>) {

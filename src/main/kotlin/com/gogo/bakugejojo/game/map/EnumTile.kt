@@ -1,4 +1,4 @@
-package com.gogo.bakugejojo.game
+package com.gogo.bakugejojo.game.map
 
 enum class EnumTile {
     Empty, Wall
