@@ -16,7 +16,6 @@ class BomberTests : StringSpec({
         date1 shouldBeBefore bomb.deployed
     }
     "bomb from deploybomb method of basic bomber should have default duration" {
-        val date1 = LocalDateTime.now()
         val bomb = Player("Bomber", 3, 0, 0, EnumMap(EnumAction::class.java)).deployBomb()
         bomb.duration shouldBe Bomb.defaultFuse
     }

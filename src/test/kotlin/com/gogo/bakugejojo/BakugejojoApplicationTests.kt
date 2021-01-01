@@ -1,6 +1,7 @@
 package com.gogo.bakugejojo
 
 import com.gogo.bakugejojo.controller.HomeController
+import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -13,7 +14,7 @@ class BakugejojoApplicationTests {
 
 	@Test
 	fun contextLoads() {
-		assert(homeController.home() === "index")
+		homeController.home() shouldBe "index"
 	}
 
 }
