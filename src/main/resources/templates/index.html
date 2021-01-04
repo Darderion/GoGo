@@ -5,16 +5,12 @@
     <title>Title</title>
 </head>
 
-<link rel="stylesheet" th:href="@{css/nav.css}">
-<link rel="stylesheet" th:href="@{css/battleground.css}">
+<link rel = "stylesheet" th:href="@{css/nav.css}">
+<link rel = "stylesheet" th:href="@{css/battleground.css}">
 
 <body>
 
-<ul id = "menu">
-    <li id = "home"><a href="#">home</a></li>
-    <li id = "options"><a href="#">options</a></li>
-    <li id = "about"><a href="#">about</a></li>
-</ul>
+<div th:insert="~{nav.html :: copy}"></div>
 
 <div id = 'battleGround'></div>
 

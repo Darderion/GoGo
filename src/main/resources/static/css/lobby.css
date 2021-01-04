@@ -1,0 +1,33 @@
+
+#lobby {
+    display: grid;
+    margin:1.5% auto auto auto;
+    width: 80%;
+    height:500px;
+    border: 2px black solid;
+    grid-template: auto/ 3fr 1.25fr;
+}
+
+#characterSelector {
+    display: grid;
+}
+
+#characterSelector div {
+    outline: 1px solid black;
+}
+
+.selector {
+    pointer-events: none
+}
+
+.characterImg {
+    background-size: 100% 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+#currentPlayers {
+    border-left: 1px solid;
+
+}
+
