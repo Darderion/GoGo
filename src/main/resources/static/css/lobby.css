@@ -12,7 +12,7 @@
     display: grid;
 }
 
-#characterSelector div {
+#characterSelector .characterImg {
     outline: 1px solid black;
 }
 
