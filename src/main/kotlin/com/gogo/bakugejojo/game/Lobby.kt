@@ -15,7 +15,7 @@ class Lobby(
     fun start() {
         game = Game(
             BattleMap(map),
-            players.map { Player(BomberInfo(it.key.name, it.value), 100, 0, 0) }.toTypedArray()
+            players.map { Player(BomberInfo(it.key.name, it.value), 100, 0, 0) }
         )
         gameStarted = true
     }
