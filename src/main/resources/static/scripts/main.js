@@ -40,4 +40,3 @@ $.ajax("/api/update", {
 		console.log(text)
 	}, type: "POST"
 })
-
