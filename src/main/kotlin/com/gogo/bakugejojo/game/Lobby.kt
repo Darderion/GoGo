@@ -7,6 +7,7 @@ import com.gogo.bakugejojo.game.map.BattleMap
 import com.gogo.bakugejojo.game.map.MapInfo
 
 class Lobby(
+	val id: Int,
 	val map: MapInfo,
 	val players: Map<Account, Character>,
 	var game: Game? = null,

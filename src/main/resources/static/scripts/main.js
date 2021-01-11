@@ -33,6 +33,19 @@ class BattleGround {
 	}
 }
 
+const queryString = window.location.search;
+console.log(queryString);
+const urlParams = new URLSearchParams(queryString);
+const token = urlParams.get("token")
+
+/*
+$.ajax(`/api/getGameInfo?token=${token}`, {
+	success: text => {
+		console.log(text)
+	}, type: "GET"
+})
+ */
+
 BattleGround.configure(20, 10)
 
 $.ajax("/api/update", {
