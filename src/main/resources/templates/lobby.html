@@ -12,6 +12,9 @@
 <body>
 <div th:insert="~{nav.html :: copy}"></div>
 
+<div id="urlToken" th:text="${token}" hidden></div>
+<div id="urlLobby" th:text="${lobby}" hidden></div>
+
 <div id = "lobby">
     <div id = "characterSelector"></div>
     <div id = "currentPlayers">
@@ -20,7 +23,7 @@
     </div>
 </div>
 
-<script th:src = "@{images/images.js}"></script>
+<script th:src = "@{scripts/images.js}"></script>
 <script th:src = "@{scripts/libs/jquery-3.5.1.min.js}"></script>
 <script th:src = "@{scripts/lobby.js}" defer></script>
 </body>

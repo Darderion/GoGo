@@ -9,12 +9,11 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
-@Autowired
-lateinit var server: Server
-
 @RestController
 class APIController {
     var id = 0
+    @Autowired
+    lateinit var server: Server
 
     @PostMapping("/api/update")
     fun update(): ResponseEntity<String> {
@@ -32,14 +31,14 @@ class APIController {
     @GetMapping("api/getTokenURL")
     fun getGameInfo(@RequestParam token: String): ResponseEntity<String> {
         var text = ""
-        val players = server.players.filter { it.name === token }
+        val players = server.players.filter { it.id.toString() == token }
         if (players.isEmpty()) {
-            text = "Err:Invalid token"
+            text = "Err:Invalid id"
         } else {
             val player = players.first()
             val lobbies = server.lobbies.filter { it.players.containsKey(player) }
             if (lobbies.isEmpty()) {
-                text = "Err:Invalid player"
+                text = "Err:Invalid lobby"
             } else {
                 val lobby = lobbies.first()
                 if (!lobby.gameStarted) {
