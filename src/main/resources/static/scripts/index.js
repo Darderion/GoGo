@@ -18,4 +18,4 @@ $.ajax("api/getToken", {
 	}, type: "GET"
 })
 
-// document.location.href = `api/getTokenURL?token=${token}`
+//document.location.href = `api/getTokenURL?token=${token}`

@@ -8,9 +8,6 @@ import org.springframework.web.servlet.ModelAndView
 
 import org.springframework.web.servlet.view.RedirectView
 
-
-
-
 @Controller
 class LobbyController {
 	// "URL:lobby?token=${token}&lobby=${lobby.id}"
