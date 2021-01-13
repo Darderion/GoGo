@@ -10,14 +10,14 @@ import com.gogo.bakugejojo.game.map.MapInfo
 class Lobby(
 	val id: Int,
 	val map: MapInfo,
-	val players: Map<Account, LobbyPlayer>,
+	val players: MutableList<LobbyPlayer>,
 	var game: Game? = null,
 	var gameStarted: Boolean = false
 ) {
 	fun start() {
 		game = Game(
 			BattleMap(map),
-			players.map { Player(BomberInfo(it.key.name, it.value.character), 100, 0, 0) }
+			players.map { Player(BomberInfo(it.account.name, it.character), 100, 0, 0) }
 		)
 		gameStarted = true
 	}

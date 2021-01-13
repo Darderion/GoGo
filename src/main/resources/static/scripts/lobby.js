@@ -82,3 +82,12 @@ divs.forEach(div => {
 		})
 	}
 })
+
+const token = $('#urlToken').text();
+const lobby = $('#urlLobby').text();
+
+$.ajax(`api/getLobbyInfo?lobby=${lobby}`, {
+	success: lobbyInfo => {
+
+	}
+})

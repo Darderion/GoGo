@@ -24,9 +24,9 @@ class Server(
 			lobbies.addAll(
 				listOf(
 					Lobby(0, MapInfo("Map Info", arrayOf()),
-						hashMapOf(
-							Pair(players[0], LobbyPlayer(character = Character.Jotaro)),
-							Pair(players[1], LobbyPlayer(character = Character.Dio))
+						mutableListOf(
+							LobbyPlayer(players[0], character = Character.Jotaro),
+							LobbyPlayer(players[1], character = Character.Dio)
 						)
 					)
 				)
