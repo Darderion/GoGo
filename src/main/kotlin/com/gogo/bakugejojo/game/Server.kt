@@ -1,6 +1,8 @@
 package com.gogo.bakugejojo.game
 
 import com.gogo.bakugejojo.game.bomber.Character
+import com.gogo.bakugejojo.game.lobby.Lobby
+import com.gogo.bakugejojo.game.lobby.LobbyPlayer
 import com.gogo.bakugejojo.game.map.MapInfo
 import org.springframework.stereotype.Component
 
@@ -23,8 +25,8 @@ class Server(
 				listOf(
 					Lobby(0, MapInfo("Map Info", arrayOf()),
 						hashMapOf(
-							Pair(players[0], Character.Jotaro),
-							Pair(players[1], Character.Dio)
+							Pair(players[0], LobbyPlayer(character = Character.Jotaro)),
+							Pair(players[1], LobbyPlayer(character = Character.Dio))
 						)
 					)
 				)
