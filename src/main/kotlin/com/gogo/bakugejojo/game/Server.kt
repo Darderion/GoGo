@@ -33,4 +33,18 @@ class Server(
 			)
 		}
 	}
+
+	fun findLobby(filterFunction: (Lobby) -> Boolean): Lobby {
+		val list = lobbies.filter(filterFunction)
+		if (list.isEmpty()) throw IndexOutOfBoundsException("No lobby found")
+		if (list.size > 1) throw NoSuchElementException("Found multiple lobbies satisfying a condition")
+		return list.first()
+	}
+
+	fun findPlayer(filterFunction: (Account) -> Boolean): Account {
+		val list = players.filter(filterFunction)
+		if (list.isEmpty()) throw IndexOutOfBoundsException("No player found")
+		if (list.size > 1) throw NoSuchElementException("Found multiple players fitting a condition")
+		return list.first()
+	}
 }

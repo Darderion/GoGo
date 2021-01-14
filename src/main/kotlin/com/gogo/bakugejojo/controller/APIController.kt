@@ -1,6 +1,8 @@
 package com.gogo.bakugejojo.controller
 
+import com.gogo.bakugejojo.game.Account
 import com.gogo.bakugejojo.game.Server
+import com.gogo.bakugejojo.game.bomber.Character
 import com.gogo.bakugejojo.game.lobby.Lobby
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -31,34 +33,53 @@ class APIController {
     }
 
     @GetMapping("api/getTokenURL")
-    fun getGameInfo(@RequestParam token: String): ResponseEntity<String> {
-        val players = server.players.filter { it.id.toString() == token }
-        if (players.isEmpty()) return ResponseEntity("Err:Invalid id", HttpStatus.OK)
-
-        val player = players.first()
-        val lobbies = server.lobbies.filter { !it.players.filter { it.account == player }.isEmpty() }
-        if (lobbies.isEmpty()) return ResponseEntity("Err:Invalid lobby", HttpStatus.OK)
-
-        val lobby = lobbies.first()
-        if (!lobby.gameStarted)
-            return ResponseEntity(
-                "URL:lobby?token=${token}&lobby=${lobby.id}",
-                HttpStatus.OK
-            )
-        return ResponseEntity("Err:No lobby", HttpStatus.OK)
+    fun getTokenURL(@RequestParam token: String): ResponseEntity<String> {
+        val lobby: Lobby
+        try {
+            val player = server.findPlayer { it.id.toString() == token }
+            lobby = server.findLobby { it.players.filter { it.account.id == player.id }.isNotEmpty() }
+            if (lobby.gameStarted) return ResponseEntity("Err:GameStarted", HttpStatus.OK)
+        } catch (e: Exception) {
+            return ResponseEntity("Err:${e.message}", HttpStatus.OK)
+        }
+        return ResponseEntity(
+            "URL:lobby?token=${token}&lobby=${lobby.id}",
+            HttpStatus.OK
+        )
     }
 
     @GetMapping("api/getLobbyInfo")
-    fun getLobbyInfo(@RequestParam lobby: String): ResponseEntity<Lobby?> {
-        val lobbies = server.lobbies.filter { it.id.toString() == lobby }
-        if (lobbies.isEmpty()) return ResponseEntity(null, HttpStatus.OK)
+    fun getLobbyInfo(@RequestParam lobbyId: String): ResponseEntity<Lobby?> {
+        val lobby: Lobby
+        try {
+            lobby = server.findLobby { it.id.toString() == lobbyId }
+        } catch (e: Exception) {
+            return ResponseEntity(null, HttpStatus.OK)
+        }
+        return if (!lobby.gameStarted)
+            ResponseEntity(lobby, HttpStatus.OK)
+        else
+            ResponseEntity(null, HttpStatus.OK)
+    }
 
-        val curLobby = lobbies.first()
-        if (!curLobby.gameStarted)
-            return ResponseEntity(
-                curLobby,
-                HttpStatus.OK
-            )
-        return ResponseEntity(null, HttpStatus.OK)
+    @GetMapping("api/moveSelector")
+    fun moveSelector(
+        @RequestParam lobbyId: String,
+        @RequestParam token: String,
+        @RequestParam character: String
+        ) : ResponseEntity<String> {
+        val lobby: Lobby
+        val player: Account
+        val characterVal: Character
+        try {
+            characterVal = Character.valueOf(character)
+            player = server.findPlayer { it.id.toString() == token }
+            lobby = server.findLobby { it.players.filter { it.account.id == player.id }.isNotEmpty() }
+            if (lobby.gameStarted) return ResponseEntity("Err:GameStarted", HttpStatus.OK)
+        } catch (e: Exception) {
+            return ResponseEntity("Err:${e.message}", HttpStatus.OK)
+        }
+        lobby.players.filter { it.account.id == player.id }.first().character = characterVal
+        return ResponseEntity("Response:${lobby.players.filter { it.account.id == player.id }.first().character}", HttpStatus.OK)
     }
 }

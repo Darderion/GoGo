@@ -85,25 +85,27 @@ let initSelectorsStyle = _ => {
 const token = $('#urlToken').text();
 const lobby = $('#urlLobby').text();
 
-$.ajax(`api/getLobbyInfo?lobby=${lobby}`, {
-	success: lobbyInfo => {
-	}
-})
+const moveSelector = (player, character) => {
+	const characterDiv = $(`#${character}Profile`)[0]
+	playersSelectorsSettings.playerCurrentCharacter = characterDiv.id
+
+	$(`#${characterSelectorScreenObj.selectors[player].id}`).animate({
+		left: `${characterDiv.offsetLeft}px`,
+		top: `${characterDiv.offsetTop}px`,
+	}, selectorMovingParams.speed, _ => {
+		selectorMovingParams.isMoving = false
+	})
+}
 
 let initOnClickCharacterChanger = _ => {
 	characterSelectorScreenObj.divs.forEach(div => {
 		div.onclick = _ => {
-			if (selectorMovingParams.isMoving) {
-				return
-			}
-			selectorMovingParams.isMoving = true
-			playersSelectorsSettings.playerCurrentCharacter = div.id
-			$(`#${characterSelectorScreenObj.selectors[player].id}`).animate({
-				left: `${div.offsetLeft}px`,
-				top: `${div.offsetTop}px`,
-			}, selectorMovingParams.speed, _ => {
-				selectorMovingParams.isMoving = false
+			$.ajax(`api/moveSelector?lobbyId=${lobby}&token=${player}&character=${div.id.replace("Profile", "")}`, {
+				success: text => {
+					console.log(text)
+				}
 			})
+			moveSelector(player, div.id.replace("Profile", ""))
 		}
 	})
 }
@@ -112,3 +114,16 @@ initLobbyGuiStyles()
 placeImagesOnCharacterSelectionScreen()
 initSelectorsStyle()
 initOnClickCharacterChanger()
+
+setInterval(_ => {
+	$.ajax(`api/getLobbyInfo?lobbyId=${lobby}`, {
+		success: lobbyInfo => {
+			lobbyInfo.players.forEach(
+				(player, ind) => {
+					moveSelector(ind, player.character)
+				}
+			)
+			console.log(lobbyInfo.players)
+		}
+	})
+}, 1000)
