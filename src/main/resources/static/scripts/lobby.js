@@ -1,29 +1,27 @@
 //-----------------------------------------------------------------------------------------------------------------------------------------
-let player = 0
-let players = {
-	'memePlayer': 'delamain',
-	'somePlayer': 'JotaroProfile',
-	'YEA': 'DioProfile',
-	'meme': 'delamain'
-}
-let characterImgList = []
+const player = 0
+const token = $('#urlToken').text();
+const lobby = $('#urlLobby').text();
+let players
+
+const characterImgList = []
 Object.keys(imagesUrls['profileImages']).forEach(key => {
 	characterImgList.push(imagesUrls['profileImages'][key])
 })
 
 // ----------------------------------------	// should be an ajax requests//-----------------------------------------------------------------
 
-let playersSelectorsSettings = {
+const playersSelectorsSettings = {
 	colors : ['red', 'blue', 'green', 'purple'],
-	playerCurrentCharacter : players[Object.keys(players)[player]]
+	// playerCurrentCharacter : players[Object.keys(players)[player]]
 }
 
-let lobbyQuerySelectors = {
+const lobbyQuerySelectors = {
 	wrapper : $('#lobby'),
 	characterSelectorScreen : $('#characterSelector')
 }
 
-let characterSelectorScreenObj = {
+const characterSelectorScreenObj = {
 	divs : [],
 	selectors : [],
 	zIndexes : [
@@ -34,18 +32,18 @@ let characterSelectorScreenObj = {
 	]
 }
 
-let selectorMovingParams = {
+const selectorMovingParams = {
 	isMoving : false,
-	speed : 500
+	speed : 250
 }
 
-let initLobbyGuiStyles = _ => {
+const initLobbyGuiStyles = _ => {
 	let numberOfRows = Math.ceil(characterImgList.length / 5)
 	lobbyQuerySelectors.wrapper.height(numberOfRows * lobbyQuerySelectors.characterSelectorScreen.width() / 5)
 	lobbyQuerySelectors.characterSelectorScreen.css('grid-template', `repeat(${numberOfRows}, auto) / repeat(5, auto)`)
 }
 
-let placeImagesOnCharacterSelectionScreen = _ => {
+const placeImagesOnCharacterSelectionScreen = _ => {
 	characterImgList.forEach((img) => {
 		let characterImg = document.createElement('div')
 		characterImg.style.backgroundImage = (`url(${img})`)
@@ -56,8 +54,8 @@ let placeImagesOnCharacterSelectionScreen = _ => {
 	})
 }
 
-let initSelectorsStyle = _ => {
-	Object.keys(players).forEach((_, index) => {
+const initSelectorsStyle = _ => {
+	players.forEach((player, index) => {
 		let selector = document.createElement('div')
 		selector.style.width = (characterSelectorScreenObj.divs[0].offsetWidth) + 'px'
 		selector.style.height = (characterSelectorScreenObj.divs[0].offsetHeight) + 'px'
@@ -77,15 +75,19 @@ let initSelectorsStyle = _ => {
 			selector.append(selectorPart)
 		})
 		selector.id = `player${index}`
+
+		const characterDiv = $(`#${player.character}Profile`)[0]
+
+		selector.style.left = `${characterDiv.offsetLeft}px`
+		selector.style.top = `${characterDiv.offsetTop}px`
+
 		lobbyQuerySelectors.characterSelectorScreen.append(selector)
 		characterSelectorScreenObj.selectors.push(selector)
 	})
 }
 
-const token = $('#urlToken').text();
-const lobby = $('#urlLobby').text();
-
 const moveSelector = (player, character) => {
+	if(players[player].character === character) return
 	const characterDiv = $(`#${character}Profile`)[0]
 	playersSelectorsSettings.playerCurrentCharacter = characterDiv.id
 
@@ -97,7 +99,7 @@ const moveSelector = (player, character) => {
 	})
 }
 
-let initOnClickCharacterChanger = _ => {
+const initOnClickCharacterChanger = _ => {
 	characterSelectorScreenObj.divs.forEach(div => {
 		div.onclick = _ => {
 			$.ajax(`api/moveSelector?lobbyId=${lobby}&token=${player}&character=${div.id.replace("Profile", "")}`, {
@@ -110,10 +112,71 @@ let initOnClickCharacterChanger = _ => {
 	})
 }
 
-initLobbyGuiStyles()
-placeImagesOnCharacterSelectionScreen()
-initSelectorsStyle()
-initOnClickCharacterChanger()
+const moveCharacterSelectorByKeyPress = key => {
+	const currentSelectorPosition = `${players[player].character}Profile`
+	let divIndex
+	let characterDiv = characterSelectorScreenObj.divs.filter((div,index) => {div.id === currentSelectorPosition; if(div.id === currentSelectorPosition) divIndex = index})
+	let nextDiv
+	switch(key) {
+		case 'w' :
+			divIndex -= 5
+			divIndex = divIndex < 0 ? characterSelectorScreenObj.divs.length - divIndex: divIndex
+			nextDiv = characterSelectorScreenObj.divs[divIndex]
+			break
+		case 's' :
+			divIndex += 5
+			divIndex = divIndex > characterSelectorScreenObj.divs.length ? (divIndex - characterSelectorScreenObj.divs.length)+1  : divIndex
+			nextDiv = characterSelectorScreenObj.divs[divIndex]
+			break
+		case 'd':
+			divIndex += 1
+			divIndex = divIndex > characterSelectorScreenObj.divs.length ? divIndex - characterSelectorScreenObj.divs.length  : divIndex
+			nextDiv = characterSelectorScreenObj.divs[divIndex]
+			break
+		case 'a':
+			divIndex -= 1
+			divIndex = divIndex < 0 ? characterSelectorScreenObj.divs.length - divIndex: divIndex
+			nextDiv = characterSelectorScreenObj.divs[divIndex]
+			break
+	}
+	if(nextDiv === undefined) return
+	$.ajax(`api/moveSelector?lobbyId=${lobby}&token=${player}&character=${nextDiv.id.replace("Profile", "")}`, {
+		success: text => {
+			console.log(text)
+		}
+	})
+}
+
+const keyPressHandlers = {
+	characterSelection : {
+		keys : ['w','s','d','a'],
+		handler :  moveCharacterSelectorByKeyPress
+	},
+}
+
+document.addEventListener('keypress', event => {
+	let key = event.key.toLowerCase()
+	Object.keys(keyPressHandlers).forEach(keyEvent => {
+		if(keyPressHandlers[keyEvent].keys.includes(key)) {
+			keyPressHandlers[keyEvent].handler(key)
+		}
+	})
+})
+
+$.ajax(`api/getLobbyInfo?lobbyId=${lobby}`, {
+	success: lobbyInfo => {
+		console.log(lobbyInfo)
+		players = lobbyInfo.players
+		initLobbyGuiStyles()
+		placeImagesOnCharacterSelectionScreen()
+		initSelectorsStyle()
+		initOnClickCharacterChanger()
+		players.forEach(
+			(player,ind) => {
+			moveSelector(ind,player.character)
+		})
+	}
+})
 
 setInterval(_ => {
 	$.ajax(`api/getLobbyInfo?lobbyId=${lobby}`, {
@@ -123,7 +186,7 @@ setInterval(_ => {
 					moveSelector(ind, player.character)
 				}
 			)
-			console.log(lobbyInfo.players)
+			players = lobbyInfo.players
 		}
 	})
-}, 1000)
+}, 1)

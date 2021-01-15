@@ -54,12 +54,12 @@ class APIController {
         try {
             lobby = server.findLobby { it.id.toString() == lobbyId }
         } catch (e: Exception) {
-            return ResponseEntity(null, HttpStatus.OK)
+            return ResponseEntity(null as Lobby?, HttpStatus.OK)
         }
         return if (!lobby.gameStarted)
             ResponseEntity(lobby, HttpStatus.OK)
         else
-            ResponseEntity(null, HttpStatus.OK)
+			ResponseEntity(null as Lobby?, HttpStatus.OK)
     }
 
     @GetMapping("api/moveSelector")
