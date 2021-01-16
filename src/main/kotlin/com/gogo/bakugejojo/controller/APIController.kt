@@ -62,7 +62,7 @@ class APIController {
 			ResponseEntity(null as Lobby?, HttpStatus.OK)
     }
 
-    @GetMapping("api/moveSelector")
+    @GetMapping("api/moveCharacterSelector")
     fun moveSelector(
         @RequestParam lobbyId: String,
         @RequestParam token: String,

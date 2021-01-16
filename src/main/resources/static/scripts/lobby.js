@@ -1,5 +1,4 @@
 //-----------------------------------------------------------------------------------------------------------------------------------------
-const player = 0
 const token = $('#urlToken').text();
 const lobby = $('#urlLobby').text();
 let players
@@ -12,17 +11,9 @@ Object.keys(imagesUrls['profileImages']).forEach(key => {
 // ----------------------------------------	// should be an ajax requests//-----------------------------------------------------------------
 
 const playerSelectors = {
-	colors: ['red', 'blue', 'green', 'purple']
-}
-
-const lobbyQuerySelectors = {
-	wrapper: $('#lobby'),
-	characterSelectorScreen: $('#characterSelector')
-}
-
-const characterSelectorScreenObj = {
+	colors: ['red', 'blue', 'green', 'purple'],
+	speed: 250,
 	divs: [],
-	selectors: [],
 	zIndexes: [
 		[4, 1, 3, 2],
 		[1, 3, 2, 4],
@@ -31,15 +22,32 @@ const characterSelectorScreenObj = {
 	]
 }
 
-const selectorMovingParams = {
-	isMoving: false,
-	speed: 250
+const lobbyJQuerySelectors = {
+	wrapper: $('#lobby'),
+	characterSelectorScreen: $('#characterSelector')
+}
+
+const characterSelectionScreen = {
+	divs: [],
+	keys: {
+		w: -5,
+		s: 5,
+		a: -1,
+		d: 1
+	},
+	width: 5,
+	keyPressHandlers: {
+		get keys() {
+			return Object.keys(characterSelectionScreen.keys)
+		},
+		handler: moveCharacterSelectorByKeyPress
+	}
 }
 
 const initLobbyGuiStyles = _ => {
-	let numberOfRows = Math.ceil(characterImgList.length / 5)
-	lobbyQuerySelectors.wrapper.height(numberOfRows * lobbyQuerySelectors.characterSelectorScreen.width() / 5)
-	lobbyQuerySelectors.characterSelectorScreen.css('grid-template', `repeat(${numberOfRows}, auto) / repeat(5, auto)`)
+	let numberOfRows = Math.ceil(characterImgList.length / characterSelectionScreen.width)
+	lobbyJQuerySelectors.wrapper.height(numberOfRows * lobbyJQuerySelectors.characterSelectorScreen.width() / characterSelectionScreen.width)
+	lobbyJQuerySelectors.characterSelectorScreen.css('grid-template', `repeat(${numberOfRows}, auto) / repeat(${characterSelectionScreen.width}, auto)`)
 }
 
 const placeImagesOnCharacterSelectionScreen = _ => {
@@ -48,16 +56,16 @@ const placeImagesOnCharacterSelectionScreen = _ => {
 		characterImg.style.backgroundImage = (`url(${img})`)
 		characterImg.id = img.split("/").pop().split('.')[0]
 		characterImg.classList.add('characterImg')
-		lobbyQuerySelectors.characterSelectorScreen.append(characterImg)
-		characterSelectorScreenObj.divs.push(characterImg)
+		lobbyJQuerySelectors.characterSelectorScreen.append(characterImg)
+		characterSelectionScreen.divs.push(characterImg)
 	})
 }
 
 const initSelectorsStyle = _ => {
 	players.forEach((player, index) => {
 		let selector = document.createElement('div')
-		selector.style.width = (characterSelectorScreenObj.divs[0].offsetWidth) + 'px'
-		selector.style.height = (characterSelectorScreenObj.divs[0].offsetHeight) + 'px'
+		selector.style.width = (characterSelectionScreen.divs[0].offsetWidth) + 'px'
+		selector.style.height = (characterSelectionScreen.divs[0].offsetHeight) + 'px'
 		selector.style.position = 'absolute'
 		selector.classList.add('selector')
 		selector.style.display = 'grid'
@@ -67,7 +75,7 @@ const initSelectorsStyle = _ => {
 
 		parts.forEach((part, _index) => {
 			let selectorPart = document.createElement('div')
-			selectorPart.style.zIndex = characterSelectorScreenObj.zIndexes[_index][index]
+			selectorPart.style.zIndex = playerSelectors.zIndexes[_index][index]
 			part.split('-').forEach(borderDirection => {
 				selectorPart.style[`border${borderDirection}`] = `solid 10px ${playerSelectors.colors[index]}`
 			})
@@ -80,75 +88,48 @@ const initSelectorsStyle = _ => {
 		selector.style.left = `${characterDiv.offsetLeft}px`
 		selector.style.top = `${characterDiv.offsetTop}px`
 
-		lobbyQuerySelectors.characterSelectorScreen.append(selector)
-		characterSelectorScreenObj.selectors.push(selector)
+		lobbyJQuerySelectors.characterSelectorScreen.append(selector)
+		playerSelectors.divs.push(selector)
 	})
 }
 
-const moveSelector = (playerInd, character) => {
+const movePlayer = (playerInd, character) => {
 	if (players[playerInd].character === character) return
 
 	const characterDiv = $(`#${character}Profile`)[0]
 	playerSelectors.playerCurrentCharacter = characterDiv.id
 
-	const jqueryDiv = $(`#${characterSelectorScreenObj.selectors[playerInd].id}`)
+	const jqueryDiv = $(`#${playerSelectors.divs[playerInd].id}`)
 
 	jqueryDiv.stop().animate({
 		left: `${characterDiv.offsetLeft}px`,
 		top: `${characterDiv.offsetTop}px`,
-	}, selectorMovingParams.speed, _ => {
-		selectorMovingParams.isMoving = false
-	})
+	}, playerSelectors.speed)
 }
 
 const initOnClickCharacterChanger = _ => {
-	characterSelectorScreenObj.divs.forEach(div => {
+	characterSelectionScreen.divs.forEach(div => {
 		div.onclick = _ => {
-			$.ajax(`api/moveSelector?lobbyId=${lobby}&token=${player}&character=${div.id.replace("Profile", "")}`)
-			moveSelector(player, div.id.replace("Profile", ""))
+			$.ajax(`api/moveCharacterSelector?lobbyId=${lobby}&token=${token}&character=${div.id.replace("Profile", "")}`)
+			movePlayer(player, div.id.replace("Profile", ""))
 		}
 	})
 }
 
-const moveCharacterSelectorByKeyPress = key => {
-	if (key.includes("Key")) key = key.replace("Key", "").toLowerCase()
+function moveCharacterSelectorByKeyPress(key) {
+	key = key.replace("Key", "").toLowerCase()
 
-	const currentSelectorPosition = `${players[player].character}Profile`
-	let divIndex = characterSelectorScreenObj.divs
+	const currentSelectorPosition = `${players[token].character}Profile`
+	let divIndex = characterSelectionScreen.divs
 		.map((div, index) => ({ id: div.id, index }))
 		.filter(div => div.id === currentSelectorPosition)[0].index
-	let nextDiv
-	switch (key) {
-		case 'w' :
-			divIndex -= 5
-			divIndex = divIndex < 0 ? characterSelectorScreenObj.divs.length - divIndex : divIndex
-			nextDiv = characterSelectorScreenObj.divs[divIndex]
-			break
-		case 's' :
-			divIndex += 5
-			divIndex = divIndex > characterSelectorScreenObj.divs.length ? (divIndex - characterSelectorScreenObj.divs.length) + 1 : divIndex
-			nextDiv = characterSelectorScreenObj.divs[divIndex]
-			break
-		case 'd':
-			divIndex += 1
-			divIndex = divIndex > characterSelectorScreenObj.divs.length ? divIndex - characterSelectorScreenObj.divs.length : divIndex
-			nextDiv = characterSelectorScreenObj.divs[divIndex]
-			break
-		case 'a':
-			divIndex -= 1
-			divIndex = divIndex < 0 ? characterSelectorScreenObj.divs.length - divIndex : divIndex
-			nextDiv = characterSelectorScreenObj.divs[divIndex]
-			break
-	}
-	if (nextDiv === undefined) return
-	$.ajax(`api/moveSelector?lobbyId=${lobby}&token=${player}&character=${nextDiv.id.replace("Profile", "")}`)
+	divIndex = divIndex + characterSelectionScreen.keys[key] % characterSelectionScreen.divs.length
+	const div = characterSelectionScreen.divs[divIndex]
+	$.ajax(`api/moveCharacterSelector?lobbyId=${lobby}&token=${token}&character=${div.id.replace("Profile", "")}`)
 }
 
 const keyPressHandlers = {
-	characterSelection: {
-		keys: ['w', 's', 'd', 'a'],
-		handler: moveCharacterSelectorByKeyPress
-	},
+	characterSelection: characterSelectionScreen.keyPressHandlers,
 }
 
 document.addEventListener('keypress', event => {
@@ -176,14 +157,14 @@ promiseCharacters.then(_ => {
 	initOnClickCharacterChanger()
 	players.forEach(
 		(player, ind) => {
-			moveSelector(ind, player.character)
+			movePlayer(ind, player.character)
 		})
 	setInterval(_ => {
 		$.ajax(`api/getLobbyInfo?lobbyId=${lobby}`, {
 			success: lobbyInfo => {
 				lobbyInfo.players.forEach(
 					(player, ind) => {
-						moveSelector(ind, player.character)
+						movePlayer(ind, player.character)
 					}
 				)
 				players = lobbyInfo.players
