@@ -11,20 +11,19 @@ Object.keys(imagesUrls['profileImages']).forEach(key => {
 
 // ----------------------------------------	// should be an ajax requests//-----------------------------------------------------------------
 
-const playersSelectorsSettings = {
-	colors : ['red', 'blue', 'green', 'purple'],
-	// playerCurrentCharacter : players[Object.keys(players)[player]]
+const playerSelectors = {
+	colors: ['red', 'blue', 'green', 'purple']
 }
 
 const lobbyQuerySelectors = {
-	wrapper : $('#lobby'),
-	characterSelectorScreen : $('#characterSelector')
+	wrapper: $('#lobby'),
+	characterSelectorScreen: $('#characterSelector')
 }
 
 const characterSelectorScreenObj = {
-	divs : [],
-	selectors : [],
-	zIndexes : [
+	divs: [],
+	selectors: [],
+	zIndexes: [
 		[4, 1, 3, 2],
 		[1, 3, 2, 4],
 		[3, 2, 4, 1],
@@ -33,8 +32,8 @@ const characterSelectorScreenObj = {
 }
 
 const selectorMovingParams = {
-	isMoving : false,
-	speed : 250
+	isMoving: false,
+	speed: 250
 }
 
 const initLobbyGuiStyles = _ => {
@@ -70,7 +69,7 @@ const initSelectorsStyle = _ => {
 			let selectorPart = document.createElement('div')
 			selectorPart.style.zIndex = characterSelectorScreenObj.zIndexes[_index][index]
 			part.split('-').forEach(borderDirection => {
-				selectorPart.style[`border${borderDirection}`] = `solid 10px ${playersSelectorsSettings.colors[index]}`
+				selectorPart.style[`border${borderDirection}`] = `solid 10px ${playerSelectors.colors[index]}`
 			})
 			selector.append(selectorPart)
 		})
@@ -86,12 +85,15 @@ const initSelectorsStyle = _ => {
 	})
 }
 
-const moveSelector = (player, character) => {
-	if(players[player].character === character) return
-	const characterDiv = $(`#${character}Profile`)[0]
-	playersSelectorsSettings.playerCurrentCharacter = characterDiv.id
+const moveSelector = (playerInd, character) => {
+	if (players[playerInd].character === character) return
 
-	$(`#${characterSelectorScreenObj.selectors[player].id}`).animate({
+	const characterDiv = $(`#${character}Profile`)[0]
+	playerSelectors.playerCurrentCharacter = characterDiv.id
+
+	const jqueryDiv = $(`#${characterSelectorScreenObj.selectors[playerInd].id}`)
+
+	jqueryDiv.stop().animate({
 		left: `${characterDiv.offsetLeft}px`,
 		top: `${characterDiv.offsetTop}px`,
 	}, selectorMovingParams.speed, _ => {
@@ -102,91 +104,90 @@ const moveSelector = (player, character) => {
 const initOnClickCharacterChanger = _ => {
 	characterSelectorScreenObj.divs.forEach(div => {
 		div.onclick = _ => {
-			$.ajax(`api/moveSelector?lobbyId=${lobby}&token=${player}&character=${div.id.replace("Profile", "")}`, {
-				success: text => {
-					console.log(text)
-				}
-			})
+			$.ajax(`api/moveSelector?lobbyId=${lobby}&token=${player}&character=${div.id.replace("Profile", "")}`)
 			moveSelector(player, div.id.replace("Profile", ""))
 		}
 	})
 }
 
 const moveCharacterSelectorByKeyPress = key => {
+	if (key.includes("Key")) key = key.replace("Key", "").toLowerCase()
+
 	const currentSelectorPosition = `${players[player].character}Profile`
-	let divIndex
-	let characterDiv = characterSelectorScreenObj.divs.filter((div,index) => {div.id === currentSelectorPosition; if(div.id === currentSelectorPosition) divIndex = index})
+	let divIndex = characterSelectorScreenObj.divs
+		.map((div, index) => ({ id: div.id, index }))
+		.filter(div => div.id === currentSelectorPosition)[0].index
 	let nextDiv
-	switch(key) {
+	switch (key) {
 		case 'w' :
 			divIndex -= 5
-			divIndex = divIndex < 0 ? characterSelectorScreenObj.divs.length - divIndex: divIndex
+			divIndex = divIndex < 0 ? characterSelectorScreenObj.divs.length - divIndex : divIndex
 			nextDiv = characterSelectorScreenObj.divs[divIndex]
 			break
 		case 's' :
 			divIndex += 5
-			divIndex = divIndex > characterSelectorScreenObj.divs.length ? (divIndex - characterSelectorScreenObj.divs.length)+1  : divIndex
+			divIndex = divIndex > characterSelectorScreenObj.divs.length ? (divIndex - characterSelectorScreenObj.divs.length) + 1 : divIndex
 			nextDiv = characterSelectorScreenObj.divs[divIndex]
 			break
 		case 'd':
 			divIndex += 1
-			divIndex = divIndex > characterSelectorScreenObj.divs.length ? divIndex - characterSelectorScreenObj.divs.length  : divIndex
+			divIndex = divIndex > characterSelectorScreenObj.divs.length ? divIndex - characterSelectorScreenObj.divs.length : divIndex
 			nextDiv = characterSelectorScreenObj.divs[divIndex]
 			break
 		case 'a':
 			divIndex -= 1
-			divIndex = divIndex < 0 ? characterSelectorScreenObj.divs.length - divIndex: divIndex
+			divIndex = divIndex < 0 ? characterSelectorScreenObj.divs.length - divIndex : divIndex
 			nextDiv = characterSelectorScreenObj.divs[divIndex]
 			break
 	}
-	if(nextDiv === undefined) return
-	$.ajax(`api/moveSelector?lobbyId=${lobby}&token=${player}&character=${nextDiv.id.replace("Profile", "")}`, {
-		success: text => {
-			console.log(text)
-		}
-	})
+	if (nextDiv === undefined) return
+	$.ajax(`api/moveSelector?lobbyId=${lobby}&token=${player}&character=${nextDiv.id.replace("Profile", "")}`)
 }
 
 const keyPressHandlers = {
-	characterSelection : {
-		keys : ['w','s','d','a'],
-		handler :  moveCharacterSelectorByKeyPress
+	characterSelection: {
+		keys: ['w', 's', 'd', 'a'],
+		handler: moveCharacterSelectorByKeyPress
 	},
 }
 
 document.addEventListener('keypress', event => {
-	let key = event.key.toLowerCase()
+	const key = event.code.replace("Key", "").toLowerCase()
 	Object.keys(keyPressHandlers).forEach(keyEvent => {
-		if(keyPressHandlers[keyEvent].keys.includes(key)) {
+		if (keyPressHandlers[keyEvent].keys.includes(key)) {
 			keyPressHandlers[keyEvent].handler(key)
 		}
 	})
 })
 
-$.ajax(`api/getLobbyInfo?lobbyId=${lobby}`, {
-	success: lobbyInfo => {
-		console.log(lobbyInfo)
-		players = lobbyInfo.players
-		initLobbyGuiStyles()
-		placeImagesOnCharacterSelectionScreen()
-		initSelectorsStyle()
-		initOnClickCharacterChanger()
-		players.forEach(
-			(player,ind) => {
-			moveSelector(ind,player.character)
-		})
-	}
-})
-
-setInterval(_ => {
+const promiseCharacters = new Promise(resolve => {
 	$.ajax(`api/getLobbyInfo?lobbyId=${lobby}`, {
 		success: lobbyInfo => {
-			lobbyInfo.players.forEach(
-				(player, ind) => {
-					moveSelector(ind, player.character)
-				}
-			)
 			players = lobbyInfo.players
+			resolve()
 		}
 	})
-}, 1)
+})
+
+promiseCharacters.then(_ => {
+	initLobbyGuiStyles()
+	placeImagesOnCharacterSelectionScreen()
+	initSelectorsStyle()
+	initOnClickCharacterChanger()
+	players.forEach(
+		(player, ind) => {
+			moveSelector(ind, player.character)
+		})
+	setInterval(_ => {
+		$.ajax(`api/getLobbyInfo?lobbyId=${lobby}`, {
+			success: lobbyInfo => {
+				lobbyInfo.players.forEach(
+					(player, ind) => {
+						moveSelector(ind, player.character)
+					}
+				)
+				players = lobbyInfo.players
+			}
+		})
+	}, 10)
+})
