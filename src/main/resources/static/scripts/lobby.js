@@ -1,6 +1,7 @@
 //-----------------------------------------------------------------------------------------------------------------------------------------
 const token = $('#urlToken').text();
 const lobby = $('#urlLobby').text();
+
 let players
 
 const characterImgList = []
@@ -30,12 +31,13 @@ const lobbyJQuerySelectors = {
 const characterSelectionScreen = {
 	divs: [],
 	keys: {
-		w: -5,
-		s: 5,
-		a: -1,
-		d: 1
+		w: { x: 0,	y: 1	},
+		s: { x: 0,	y: -1	},
+		a: { x: -1,	y: 0	},
+		d: { x: 1,	y: 0	}
 	},
-	width: 5,
+	width: 3,
+
 	keyPressHandlers: {
 		get keys() {
 			return Object.keys(characterSelectionScreen.keys)
@@ -51,21 +53,25 @@ const initLobbyGuiStyles = _ => {
 }
 
 const placeImagesOnCharacterSelectionScreen = _ => {
-	characterImgList.forEach((img) => {
+
+	characterSelectionScreen.divs = Array(characterSelectionScreen.width).fill(null).map(_ => [])
+
+	characterImgList.forEach((img,index) => {
 		let characterImg = document.createElement('div')
 		characterImg.style.backgroundImage = (`url(${img})`)
 		characterImg.id = img.split("/").pop().split('.')[0]
 		characterImg.classList.add('characterImg')
 		lobbyJQuerySelectors.characterSelectorScreen.append(characterImg)
-		characterSelectionScreen.divs.push(characterImg)
+		characterSelectionScreen.divs[index % characterSelectionScreen.width].push(characterImg)
 	})
+	characterSelectionScreen.height = Math.max(...characterSelectionScreen.divs.map(line => line.length))
 }
 
 const initSelectorsStyle = _ => {
 	players.forEach((player, index) => {
 		let selector = document.createElement('div')
-		selector.style.width = (characterSelectionScreen.divs[0].offsetWidth) + 'px'
-		selector.style.height = (characterSelectionScreen.divs[0].offsetHeight) + 'px'
+		selector.style.width = (characterSelectionScreen.divs[0][0].offsetWidth) + 'px'
+		selector.style.height = (characterSelectionScreen.divs[0][0].offsetHeight) + 'px'
 		selector.style.position = 'absolute'
 		selector.classList.add('selector')
 		selector.style.display = 'grid'
@@ -108,28 +114,54 @@ const movePlayer = (playerInd, character) => {
 }
 
 const initOnClickCharacterChanger = _ => {
-	characterSelectionScreen.divs.forEach(div => {
-		div.onclick = _ => {
-			$.ajax(`api/moveCharacterSelector?lobbyId=${lobby}&token=${token}&character=${div.id.replace("Profile", "")}`)
-			movePlayer(player, div.id.replace("Profile", ""))
-		}
+	characterSelectionScreen.divs.forEach(line => {
+		line.forEach(div => {
+			div.onclick = _ => {
+				$.ajax(`api/moveCharacterSelector?lobbyId=${lobby}&token=${token}&character=${div.id.replace("Profile", "")}`)
+				movePlayer(token, div.id.replace("Profile", ""))
+			}
+		})
 	})
 }
+
+const getDivPositionById = currentSelectorPosition => ({
+	x :	characterSelectionScreen.divs.findIndex(line => line.map(div => div.id).includes(currentSelectorPosition)),
+	y : characterSelectionScreen.divs.map(line => line.map(div=>div.id).findIndex(id => id === currentSelectorPosition)).filter(index => index !== -1)[0]
+
+})
 
 function moveCharacterSelectorByKeyPress(key) {
 	key = key.replace("Key", "").toLowerCase()
 
+	const sumPositions = (pos1, pos2) => ({ x: pos1.x + pos2.x, y: pos1.y + pos2.y })
+
+	const handleBorders = pos => ({
+		x : (pos.x + characterSelectionScreen.width) % characterSelectionScreen.width,
+		y : (pos.y + characterSelectionScreen.height) % characterSelectionScreen.height
+	})
+
 	const currentSelectorPosition = `${players[token].character}Profile`
-	let divIndex = characterSelectionScreen.divs
-		.map((div, index) => ({ id: div.id, index }))
-		.filter(div => div.id === currentSelectorPosition)[0].index
-	divIndex = divIndex + characterSelectionScreen.keys[key] % characterSelectionScreen.divs.length
-	const div = characterSelectionScreen.divs[divIndex]
+
+	let divPos = getDivPositionById(currentSelectorPosition)
+	let nextDivPos = handleBorders(sumPositions(divPos, characterSelectionScreen.keys[key]))
+
+	const div = characterSelectionScreen.divs[nextDivPos.x][nextDivPos.y]
+
+	if (div === undefined) return
+
 	$.ajax(`api/moveCharacterSelector?lobbyId=${lobby}&token=${token}&character=${div.id.replace("Profile", "")}`)
 }
 
 const keyPressHandlers = {
 	characterSelection: characterSelectionScreen.keyPressHandlers,
+}
+
+const initPlayerListStyle = _ => {
+
+}
+
+const displayCurrentPlayers = _ => {
+
 }
 
 document.addEventListener('keypress', event => {
