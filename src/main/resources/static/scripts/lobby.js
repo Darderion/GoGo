@@ -3,11 +3,13 @@ const token = $('#urlToken').text();
 const lobby = $('#urlLobby').text();
 
 let players
+let characters
 
-const characterImgList = []
+/*
 Object.keys(imagesUrls['profileImages']).forEach(key => {
 	characterImgList.push(imagesUrls['profileImages'][key])
 })
+ */
 
 // ----------------------------------------	// should be an ajax requests//-----------------------------------------------------------------
 
@@ -47,7 +49,7 @@ const characterSelectionScreen = {
 }
 
 const initLobbyGuiStyles = _ => {
-	let numberOfRows = Math.ceil(characterImgList.length / characterSelectionScreen.width)
+	let numberOfRows = Math.ceil(characters.length / characterSelectionScreen.width)
 	lobbyJQuerySelectors.wrapper.height(numberOfRows * lobbyJQuerySelectors.characterSelectorScreen.width() / characterSelectionScreen.width)
 	lobbyJQuerySelectors.characterSelectorScreen.css('grid-template', `repeat(${numberOfRows}, auto) / repeat(${characterSelectionScreen.width}, auto)`)
 }
@@ -56,7 +58,7 @@ const placeImagesOnCharacterSelectionScreen = _ => {
 
 	characterSelectionScreen.divs = Array(characterSelectionScreen.width).fill(null).map(_ => [])
 
-	characterImgList.forEach((img,index) => {
+	characters.forEach((img,index) => {
 		let characterImg = document.createElement('div')
 		characterImg.style.backgroundImage = (`url(${img})`)
 		characterImg.id = img.split("/").pop().split('.')[0]
@@ -156,14 +158,6 @@ const keyPressHandlers = {
 	characterSelection: characterSelectionScreen.keyPressHandlers,
 }
 
-const initPlayerListStyle = _ => {
-
-}
-
-const displayCurrentPlayers = _ => {
-
-}
-
 document.addEventListener('keypress', event => {
 	const key = event.code.replace("Key", "").toLowerCase()
 	Object.keys(keyPressHandlers).forEach(keyEvent => {
@@ -173,16 +167,17 @@ document.addEventListener('keypress', event => {
 	})
 })
 
-const promiseCharacters = new Promise(resolve => {
+const lobbyInfoRequest = new Promise(resolve => {
 	$.ajax(`api/getLobbyInfo?lobbyId=${lobby}`, {
 		success: lobbyInfo => {
 			players = lobbyInfo.players
+			characters = Object.values(lobbyInfo.characters).map(characterName => imagesUrls.profileImages[characterName])
 			resolve()
 		}
 	})
 })
 
-promiseCharacters.then(_ => {
+lobbyInfoRequest.then(_ => {
 	initLobbyGuiStyles()
 	placeImagesOnCharacterSelectionScreen()
 	initSelectorsStyle()

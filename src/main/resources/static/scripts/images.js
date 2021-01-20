@@ -1,7 +1,7 @@
 let imagesUrls = {
 	profileImages: {
-		dio: 'https://media.discordapp.net/attachments/635510698209837068/796008953447579688/DioProfile.png',
-		jotaro: 'https://media.discordapp.net/attachments/635510698209837068/796008968191344650/JotaroProfile.png',
+		Dio: 'https://media.discordapp.net/attachments/635510698209837068/796008953447579688/DioProfile.png',
+		Jotaro: 'https://media.discordapp.net/attachments/635510698209837068/796008968191344650/JotaroProfile.png',
 		kakyoin: 'https://cdn.discordapp.com/attachments/635510698209837068/799628732993765396/KakyoinProfile.png',
 		kars: 'https://cdn.discordapp.com/attachments/635510698209837068/799627882623533106/KarsProfile.png',
 		holHorse: 'https://cdn.discordapp.com/attachments/635510698209837068/799627871324209182/HolHorseProfile.png',

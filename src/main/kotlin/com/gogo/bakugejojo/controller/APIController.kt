@@ -37,7 +37,7 @@ class APIController {
         val lobby: Lobby
         try {
             val player = server.findPlayer { it.id.toString() == token }
-            lobby = server.findLobby { it.players.filter { it.account.id == player.id }.isNotEmpty() }
+            lobby = server.findLobby { it.players.any { it.account.id == player.id } }
             if (lobby.gameStarted) return ResponseEntity("Err:GameStarted", HttpStatus.OK)
         } catch (e: Exception) {
             return ResponseEntity("Err:${e.message}", HttpStatus.OK)
@@ -74,12 +74,12 @@ class APIController {
         try {
             characterVal = Character.valueOf(character)
             player = server.findPlayer { it.id.toString() == token }
-            lobby = server.findLobby { it.players.filter { it.account.id == player.id }.isNotEmpty() }
+            lobby = server.findLobby { it.players.any { it.account.id == player.id } }
             if (lobby.gameStarted) return ResponseEntity("Err:GameStarted", HttpStatus.OK)
         } catch (e: Exception) {
             return ResponseEntity("Err:${e.message}", HttpStatus.OK)
         }
-        lobby.players.filter { it.account.id == player.id }.first().character = characterVal
-        return ResponseEntity("Response:${lobby.players.filter { it.account.id == player.id }.first().character}", HttpStatus.OK)
+        lobby.players.first { it.account.id == player.id }.character = characterVal
+        return ResponseEntity("Response:${lobby.players.first { it.account.id == player.id }.character}", HttpStatus.OK)
     }
 }
