@@ -1,32 +1,56 @@
 
 #lobby {
-    display: grid;
-    margin:1.5% auto auto auto;
-    width: 80%;
-    height:500px;
-    border: 2px black solid;
-    grid-template: auto/ 3fr 1.25fr;
+	display: grid;
+	margin: 1.5% auto auto auto;
+	width: 80%;
+	height: 500px;
+	border: 2px black solid;
+	grid-template: auto / 3fr 1.25fr;
 }
 
 #characterSelector {
-    display: grid;
+	display: grid;
 }
 
-#characterSelector .characterImg {
-    outline: 1px solid black;
-}
-
-.selector {
-    pointer-events: none
-}
-
-.characterImg {
-    background-size: 100% 100%;
-    background-position: center;
-    background-repeat: no-repeat;
+#characterModel {
+	width: 100%;
+	background-position: center, center;
+	background-repeat: no-repeat;
+	border-left: solid 2px;
 }
 
 #currentPlayers {
-    border-left: 1px solid;
+	min-width: 0;
+	min-height: 0;
+	display: grid;
+}
 
+#playerNickname {
+	min-width: 0;
+}
+
+#characterSelector .characterImg {
+	outline: 1px solid black;
+}
+
+.selector {
+	pointer-events: none
+}
+
+#playerImgPlaceholder img {
+	width: 20%;
+}
+
+.characterImg {
+	background-size: 100% 100%;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+#currentPlayers {
+	border-left: 2px solid;
+
+}
+
+#playerContainer {
 }

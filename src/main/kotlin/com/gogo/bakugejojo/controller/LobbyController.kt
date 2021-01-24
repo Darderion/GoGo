@@ -41,6 +41,19 @@ class LobbyController {
 		ResponseEntity("Response:${lobby.players.first { it.account == player }.character}", HttpStatus.OK)
 	} catch (e: Exception) { ResponseEntity("Err:${e.message}", HttpStatus.OK) }
 
+	@GetMapping("api/setReady")
+	fun setReady(
+			@RequestParam lobbyId: Int,
+			@RequestParam token: Int,
+			@RequestParam status: Boolean
+	) = try {
+		val player = server.getPlayer(token)
+		val lobby = server.getLobby(player)
+		if(lobby.gameStarted) throw Exception("GameStarted")
+		lobby.players.first { it.account == player }.ready = status
+		ResponseEntity("Response:${lobby.players.first { it.account == player }.ready}", HttpStatus.OK)
+} catch (e: Exception) { ResponseEntity("Err:${e.message}",HttpStatus.OK)}
+
 	@GetMapping("api/getLobbyInfo")
 	fun getLobbyInfo(@RequestParam lobbyId: Int) = try {
 		val lobby = server.getLobby(lobbyId)

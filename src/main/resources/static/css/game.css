@@ -1,100 +1,100 @@
 @import url("https://fonts.googleapis.com/css?family=Raleway:400,400i,700");
 
 #battleGroundWrapper {
-    font: 200 2rem Raleway, sans-serif;
-    display: grid;
-    grid-template: auto / 1.3fr 4fr;
-    margin: 1% auto auto auto;
-    width: 90%;
+	font: 200 2rem Raleway, sans-serif;
+	display: grid;
+	grid-template: auto / 1.3fr 4fr;
+	margin: 1% auto auto auto;
+	width: 90%;
 }
 
 .interfaceDiv {
-    display: grid;
-    grid-template: 1.6fr 2fr / auto;
-    border-bottom: 2px solid black;
+	display: grid;
+	grid-template: 1.6fr 2fr / auto;
+	border-bottom: 2px solid black;
 }
 
 .interfaceDivTop {
-    display: grid;
-    border-bottom: 2px solid black;
-    grid-template: auto / 1.29fr 4fr;
+	display: grid;
+	border-bottom: 2px solid black;
+	grid-template: auto / 1.29fr 4fr;
 }
 
 .textInfoPlaceholder {
-    text-align: center;
-    font-size: 18px;
-    border-left: 2px solid black
+	text-align: center;
+	font-size: 18px;
+	border-left: 2px solid black
 }
 
 .nickNamePlaceholder {
-    display: grid;
-    grid-template: auto auto / auto;
+	display: grid;
+	grid-template: auto auto / auto;
 }
 
 .specialPlaceholder {
-    width: 100%;
-    height: 75%;
-    border-top: 2px solid black;
-    text-align: center;
-    font-size: 18px;
+	width: 100%;
+	height: 75%;
+	border-top: 2px solid black;
+	text-align: center;
+	font-size: 18px;
 }
 
 .interfaceDivBottom {
-    display: grid;
-    grid-template:  auto / repeat(4, 1fr);
+	display: grid;
+	grid-template: auto / repeat(4, 1fr);
 }
 
 .interfaceDivBottom .stat {
-     display: grid;
-     grid-template: auto auto / auto;
-     border-right: 2px solid black;
- }
+	display: grid;
+	grid-template: auto auto / auto;
+	border-right: 2px solid black;
+}
 
-.interfaceDivBottom .stat div{
-    border-bottom: 2px solid black;
-    background-size: 75% 75%;
-    background-position: center;
-    background-repeat: no-repeat;
+.interfaceDivBottom .stat div {
+	border-bottom: 2px solid black;
+	background-size: 75% 75%;
+	background-position: center;
+	background-repeat: no-repeat;
 }
 
 .characterImage {
-    background-size: 100% 100%;
-    background-position: center;
-    background-repeat: no-repeat;
+	background-size: 100% 100%;
+	background-position: center;
+	background-repeat: no-repeat;
 
 }
 
 .interfaceDivBottom img {
-    width: 50%;
-    max-width: 100%;
-    margin: 2% auto 2% auto;
-    padding: 1% 1% 1% 1%
+	width: 50%;
+	max-width: 100%;
+	margin: 2% auto 2% auto;
+	padding: 1% 1% 1% 1%
 }
 
 .interfaceDivBottom text {
-    margin: auto auto auto auto;
-    text-align: center;
-    font-size: 18px;
+	margin: auto auto auto auto;
+	text-align: center;
+	font-size: 18px;
 }
 
 #visiblePlayers {
-    display: grid;
-    grid-template: auto auto auto auto / auto;
-    outline: 2px solid black;
+	display: grid;
+	grid-template: auto auto auto auto / auto;
+	outline: 2px solid black;
 }
 
 
 #battleGround {
-    display: grid;
-    height: 500px;
-    outline: 2px solid black;
+	display: grid;
+	height: 500px;
+	outline: 2px solid black;
 }
 
 #battleGround div {
-    outline: 1px solid black;
+	outline: 1px solid black;
 }
 
 .tile {
-    background-size: 100% 100%;
-    background-repeat: no-repeat;
+	background-size: 100% 100%;
+	background-repeat: no-repeat;
 }

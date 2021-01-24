@@ -16,8 +16,8 @@ class Server(
 		if (players.isEmpty()) {
 			players.addAll(
 				listOf(
-					Account(0, "Jotaro", ""),
-					Account(1, "Dio", "")
+					Account(0, "Jotaro", "https://media.discordapp.net/attachments/635510698209837068/796008957507665940/empty.png"),
+					Account(1, "Dio", "https://media.discordapp.net/attachments/635510698209837068/796008957507665940/empty.png")
 				)
 			)
 		}

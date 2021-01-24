@@ -1,32 +1,34 @@
 @import url("https://fonts.googleapis.com/css?family=Raleway:400,400i,700");
 
 #menu {
-    width: 50%;
-    border: solid 1px black;
-    margin: 1% auto auto auto;
-    display: grid;
-    grid-template: auto / auto auto auto auto auto;
-    list-style-type: none;
-    background-color: rgba(200,200,200,0.10);
+	width: 50%;
+	border: solid 1px black;
+	margin: 1% auto auto auto;
+	display: grid;
+	grid-template: auto / auto auto auto auto auto;
+	list-style-type: none;
+	background-color: rgba(200, 200, 200, 0.10);
 }
+
 #menu li {
-    margin: auto;
+	margin: auto;
 }
 
 #menu li a {
-    --fill-color: red;
-    position: relative;
-    padding: 4px 0;
-    font: 700 2rem Raleway, sans-serif;
-    text-decoration: none;
-    text-transform: uppercase;
-    -webkit-text-stroke: 2px var(--fill-color);
-    background: linear-gradient(var(--fill-color) 0 100%) left/0 no-repeat;
-    color: transparent;
-    -webkit-background-clip: text;
-    background-clip: text;
-    transition: 0.5s linear;
+	--fill-color: red;
+	position: relative;
+	padding: 4px 0;
+	font: 700 2rem Raleway, sans-serif;
+	text-decoration: none;
+	text-transform: uppercase;
+	-webkit-text-stroke: 2px var(--fill-color);
+	background: linear-gradient(var(--fill-color) 0 100%) left/0 no-repeat;
+	color: transparent;
+	-webkit-background-clip: text;
+	background-clip: text;
+	transition: 0.5s linear;
 }
+
 #menu li a:hover {
-    background-size: 100%;
+	background-size: 100%;
 }

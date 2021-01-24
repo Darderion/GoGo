@@ -1,11 +1,8 @@
-//-----------------------------------------------------------------------------------------------------------------------------------------
 const token = $('#urlToken').text();
 const lobby = $('#urlLobby').text();
 
 let players
 let characters
-
-// ----------------------------------------	// should be an ajax requests//-----------------------------------------------------------------
 
 const playerSelectors = {
 	colors: ['red', 'blue', 'green', 'purple'],
@@ -27,12 +24,12 @@ const lobbyJQuerySelectors = {
 const characterSelectionScreen = {
 	divs: [],
 	keys: {
-		w: { x: 0,	y: 1	},
-		s: { x: 0,	y: -1	},
-		a: { x: -1,	y: 0	},
-		d: { x: 1,	y: 0	}
+		w: {x: 0, y: 1},
+		s: {x: 0, y: -1},
+		a: {x: -1, y: 0},
+		d: {x: 1, y: 0}
 	},
-	width: 3,
+	width: 8,
 
 	keyPressHandlers: {
 		get keys() {
@@ -46,15 +43,71 @@ const keyPressHandlers = {
 	characterSelection: characterSelectionScreen.keyPressHandlers,
 }
 
+const playersGUI = {
+	divs: [],
+	wrapper: $('#currentPlayers'),
+	colors: {
+		readyColor : 'rgba(0,255,0,0.25)',
+		notReadyColor: 'rgba(255,0,0,0.25)'
+	}
+}
+
+function injectPlayerInfo(div, player) {
+	div.playerImg.src = player.account.pictureURL
+	div.playerNickname.innerText = player.account.name
+	div.playerCharacter.innerText = player.character
+	div.playerCharacterModel.style.backgroundImage = `url(${imagesUrls['models'][player.character]['idle']})`
+	div.playerCharacterModel.style.backgroundColor = player.ready ? playersGUI.colors.readyColor : playersGUI.colors.notReadyColor
+}
+
+const updateReady = (div,player) => div.playerCharacterModel.style.backgroundColor = player.ready ?
+	playersGUI.colors.readyColor :
+	playersGUI.colors.notReadyColor
+
+function initPlayersGUI() {
+	players.forEach((player,index) => {
+		console.log(player)
+		const playerContainer = document.createElement('div')
+		playerContainer.id = 'playerContainer'
+		playerContainer.style.borderBottom = index === players.length-1 ?  '' : '2px solid black'
+		playerContainer.style.display = 'grid'
+		playerContainer.style.gridTemplateAreas = '"a b c" "a d c"'
+		const playerImgPlaceholder = document.createElement('div')
+		const playerImg = document.createElement('img')
+		playerImgPlaceholder.id = 'playerImgPlaceholder'
+		playerImg.style.gridArea = 'a'
+		playerImgPlaceholder.append(playerImg)
+		const playerNickname = document.createElement('div')
+		playerNickname.id = 'playerNickname'
+		playerNickname.style.maxWidth = '0'
+		playerNickname.style.gridArea = 'b'
+		const playerCharacter = document.createElement('div')
+		playerCharacter.id = 'playerCharacter'
+		playerCharacter.style.maxWidth = '0'
+		playerCharacter.style.gridArea = 'd'
+		const playerCharacterModel = document.createElement('div')
+		playerCharacterModel.id = 'characterModel'
+		playerCharacterModel.style.gridArea = 'c'
+
+		if (index == token) playerCharacterModel.onclick = _ => {
+			$.ajax(`api/setReady?lobbyId=${lobby}&token=${token}&status=${!players[index].ready}`)
+		}
+		playerContainer.append(playerImgPlaceholder, playerNickname, playerCharacter, playerCharacterModel)
+		playersGUI.divs.push({playerContainer, playerImgPlaceholder, playerImg, playerNickname, playerCharacter, playerCharacterModel})
+		injectPlayerInfo(playersGUI.divs[index],player)
+		playersGUI.wrapper.append(playerContainer)
+	})
+}
+
 function initLobbyGuiStyles() {
-	let numberOfRows = Math.ceil(characters.length / characterSelectionScreen.width)
+	const numberOfRows = Math.ceil(characters.length / characterSelectionScreen.width)
 	lobbyJQuerySelectors.wrapper.height(numberOfRows * lobbyJQuerySelectors.characterSelectorScreen.width() / characterSelectionScreen.width)
 	lobbyJQuerySelectors.characterSelectorScreen.css('grid-template', `repeat(${numberOfRows}, auto) / repeat(${characterSelectionScreen.width}, auto)`)
 }
 
 function placeImagesOnCharacterSelectionScreen() {
 	characterSelectionScreen.divs = Array(characterSelectionScreen.width).fill(null).map(_ => [])
-	characters.forEach((img,index) => {
+	characters.forEach((img, index) => {
 		let characterImg = document.createElement('div')
 		characterImg.style.backgroundImage = (`url(${img})`)
 		characterImg.id = img.split("/").pop().split('.')[0]
@@ -123,18 +176,18 @@ function initOnClickCharacterChanger() {
 }
 
 const getDivPositionById = currentSelectorPosition => ({
-	x :	characterSelectionScreen.divs.findIndex(line => line.map(div => div.id).includes(currentSelectorPosition)),
-	y : characterSelectionScreen.divs.map(line => line.map(div=>div.id).findIndex(id => id === currentSelectorPosition)).filter(index => index !== -1)[0]
+	x: characterSelectionScreen.divs.findIndex(line => line.map(div => div.id).includes(currentSelectorPosition)),
+	y: characterSelectionScreen.divs.map(line => line.map(div => div.id).findIndex(id => id === currentSelectorPosition)).filter(index => index !== -1)[0]
 })
 
 function moveCharacterSelectorByKeyPress(key) {
 	key = key.replace("Key", "").toLowerCase()
 
-	const sumPositions = (pos1, pos2) => ({ x: pos1.x + pos2.x, y: pos1.y + pos2.y })
+	const sumPositions = (pos1, pos2) => ({x: pos1.x + pos2.x, y: pos1.y + pos2.y})
 
 	const handleBorders = pos => ({
-		x : (pos.x + characterSelectionScreen.width) % characterSelectionScreen.width,
-		y : (pos.y + characterSelectionScreen.height) % characterSelectionScreen.height
+		x: (pos.x + characterSelectionScreen.width) % characterSelectionScreen.width,
+		y: (pos.y + characterSelectionScreen.height) % characterSelectionScreen.height
 	})
 
 	const currentSelectorPosition = `${players[token].character}Profile`
@@ -173,6 +226,7 @@ lobbyInfoRequest.then(_ => {
 	placeImagesOnCharacterSelectionScreen()
 	initSelectorsStyle()
 	initOnClickCharacterChanger()
+	initPlayersGUI()
 	players.forEach(
 		(player, ind) => {
 			movePlayer(ind, player.character)
@@ -183,6 +237,7 @@ lobbyInfoRequest.then(_ => {
 				lobbyInfo.players.forEach(
 					(player, ind) => {
 						movePlayer(ind, player.character)
+						updateReady(playersGUI.divs[ind],player)
 					}
 				)
 				players = lobbyInfo.players

@@ -8,6 +8,17 @@ let imagesUrls = {
 		diavolo: 'https://cdn.discordapp.com/attachments/635510698209837068/799627843394863124/DiavoloProfile.png'
 	},
 
+	models: {
+		Dio: {
+			idle : 'https://cdn.discordapp.com/attachments/635510698209837068/802870713371066408/DioIdle.gif',
+			moving : 'https://cdn.discordapp.com/attachments/635510698209837068/802870711600414730/DioMoving.gif'
+		},
+		Jotaro: {
+			idle : 'https://cdn.discordapp.com/attachments/635510698209837068/802870714855325716/JotaroIdle.gif',
+			moving : 'https://cdn.discordapp.com/attachments/635510698209837068/802870709323169852/JotaroMoving.gif'
+		},
+	},
+
 	blockImages: {
 		bomb: 'https://cdn.discordapp.com/attachments/635510698209837068/796008939555782676/bomb.png',
 		explosion: 'https://media.discordapp.net/attachments/635510698209837068/796008962721579058/explosion.png',
