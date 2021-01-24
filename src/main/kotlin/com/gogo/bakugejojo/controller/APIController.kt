@@ -33,10 +33,10 @@ class APIController {
     }
 
     @GetMapping("api/getTokenURL")
-    fun getTokenURL(@RequestParam token: String): ResponseEntity<String> {
+    fun getTokenURL(@RequestParam token: Int): ResponseEntity<String> {
         val lobby: Lobby
         try {
-            val player = server.findPlayer { it.id.toString() == token }
+            val player = server.findPlayer { it.id == token }
             lobby = server.findLobby { it.players.any { it.account.id == player.id } }
             if (lobby.gameStarted) return ResponseEntity("Err:GameStarted", HttpStatus.OK)
         } catch (e: Exception) {
@@ -49,10 +49,10 @@ class APIController {
     }
 
     @GetMapping("api/getLobbyInfo")
-    fun getLobbyInfo(@RequestParam lobbyId: String): ResponseEntity<Lobby?> {
+    fun getLobbyInfo(@RequestParam lobbyId: Int): ResponseEntity<Lobby?> {
         val lobby: Lobby
         try {
-            lobby = server.findLobby { it.id.toString() == lobbyId }
+            lobby = server.findLobby(lobbyId)
         } catch (e: Exception) {
             return ResponseEntity(null as Lobby?, HttpStatus.OK)
         }
@@ -64,8 +64,8 @@ class APIController {
 
     @GetMapping("api/moveCharacterSelector")
     fun moveSelector(
-        @RequestParam lobbyId: String,
-        @RequestParam token: String,
+        @RequestParam lobbyId: Int,
+        @RequestParam token: Int,
         @RequestParam character: String
         ) : ResponseEntity<String> {
         val lobby: Lobby
@@ -73,13 +73,13 @@ class APIController {
         val characterVal: Character
         try {
             characterVal = Character.valueOf(character)
-            player = server.findPlayer { it.id.toString() == token }
-            lobby = server.findLobby { it.players.any { it.account.id == player.id } }
+            player = server.findPlayer(token)
+            lobby = server.findLobby(player)
             if (lobby.gameStarted) return ResponseEntity("Err:GameStarted", HttpStatus.OK)
         } catch (e: Exception) {
             return ResponseEntity("Err:${e.message}", HttpStatus.OK)
         }
-        lobby.players.first { it.account.id == player.id }.character = characterVal
-        return ResponseEntity("Response:${lobby.players.first { it.account.id == player.id }.character}", HttpStatus.OK)
+        lobby.players.first { it.account == player }.character = characterVal
+        return ResponseEntity("Response:${lobby.players.first { it.account == player }.character}", HttpStatus.OK)
     }
 }

@@ -8,9 +8,8 @@ abstract class Bomber(
 	var hp: Int,
 	var x: Int,
 	var y: Int
-) : Snapshotable, Identifiable {
+) : Snapshotable, Identifiable() {
 	private val actions: Map<EnumAction, Action> = mutableMapOf()
-	override var id = Identificator.get()
 
 	fun deployBomb() = Bomb(Bomb.defaultFuse, x, y)
 

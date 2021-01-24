@@ -3,9 +3,8 @@ package com.gogo.bakugejojo.game
 class Bomb(
 	var duration: Int,
 	var position: Position
-) : Snapshotable, Identifiable {
+) : Snapshotable, Identifiable() {
 	var deployed: Int = 0
-	override var id = Identificator.get()
 
 	fun deploy(deployment: Int): Bomb {
 		deployed = deployment
