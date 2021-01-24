@@ -5,12 +5,6 @@ const lobby = $('#urlLobby').text();
 let players
 let characters
 
-/*
-Object.keys(imagesUrls['profileImages']).forEach(key => {
-	characterImgList.push(imagesUrls['profileImages'][key])
-})
- */
-
 // ----------------------------------------	// should be an ajax requests//-----------------------------------------------------------------
 
 const playerSelectors = {
@@ -48,16 +42,18 @@ const characterSelectionScreen = {
 	}
 }
 
-const initLobbyGuiStyles = _ => {
+const keyPressHandlers = {
+	characterSelection: characterSelectionScreen.keyPressHandlers,
+}
+
+function initLobbyGuiStyles() {
 	let numberOfRows = Math.ceil(characters.length / characterSelectionScreen.width)
 	lobbyJQuerySelectors.wrapper.height(numberOfRows * lobbyJQuerySelectors.characterSelectorScreen.width() / characterSelectionScreen.width)
 	lobbyJQuerySelectors.characterSelectorScreen.css('grid-template', `repeat(${numberOfRows}, auto) / repeat(${characterSelectionScreen.width}, auto)`)
 }
 
-const placeImagesOnCharacterSelectionScreen = _ => {
-
+function placeImagesOnCharacterSelectionScreen() {
 	characterSelectionScreen.divs = Array(characterSelectionScreen.width).fill(null).map(_ => [])
-
 	characters.forEach((img,index) => {
 		let characterImg = document.createElement('div')
 		characterImg.style.backgroundImage = (`url(${img})`)
@@ -69,7 +65,7 @@ const placeImagesOnCharacterSelectionScreen = _ => {
 	characterSelectionScreen.height = Math.max(...characterSelectionScreen.divs.map(line => line.length))
 }
 
-const initSelectorsStyle = _ => {
+function initSelectorsStyle() {
 	players.forEach((player, index) => {
 		let selector = document.createElement('div')
 		selector.style.width = (characterSelectionScreen.divs[0][0].offsetWidth) + 'px'
@@ -101,7 +97,7 @@ const initSelectorsStyle = _ => {
 	})
 }
 
-const movePlayer = (playerInd, character) => {
+function movePlayer(playerInd, character) {
 	if (players[playerInd].character === character) return
 
 	const characterDiv = $(`#${character}Profile`)[0]
@@ -115,7 +111,7 @@ const movePlayer = (playerInd, character) => {
 	}, playerSelectors.speed)
 }
 
-const initOnClickCharacterChanger = _ => {
+function initOnClickCharacterChanger() {
 	characterSelectionScreen.divs.forEach(line => {
 		line.forEach(div => {
 			div.onclick = _ => {
@@ -129,7 +125,6 @@ const initOnClickCharacterChanger = _ => {
 const getDivPositionById = currentSelectorPosition => ({
 	x :	characterSelectionScreen.divs.findIndex(line => line.map(div => div.id).includes(currentSelectorPosition)),
 	y : characterSelectionScreen.divs.map(line => line.map(div=>div.id).findIndex(id => id === currentSelectorPosition)).filter(index => index !== -1)[0]
-
 })
 
 function moveCharacterSelectorByKeyPress(key) {
@@ -152,10 +147,6 @@ function moveCharacterSelectorByKeyPress(key) {
 	if (div === undefined) return
 
 	$.ajax(`api/moveCharacterSelector?lobbyId=${lobby}&token=${token}&character=${div.id.replace("Profile", "")}`)
-}
-
-const keyPressHandlers = {
-	characterSelection: characterSelectionScreen.keyPressHandlers,
 }
 
 document.addEventListener('keypress', event => {
