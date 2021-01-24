@@ -1,9 +1,6 @@
 package com.gogo.bakugejojo.game.bomber
 
-import com.gogo.bakugejojo.game.Action
-import com.gogo.bakugejojo.game.Bomb
-import com.gogo.bakugejojo.game.EnumAction
-import com.gogo.bakugejojo.game.Snapshotable
+import com.gogo.bakugejojo.game.*
 import java.time.LocalDateTime
 
 abstract class Bomber(
@@ -11,22 +8,24 @@ abstract class Bomber(
 	var hp: Int,
 	var x: Int,
 	var y: Int
-) : Snapshotable {
+) : Snapshotable, Identifiable {
 	private val actions: Map<EnumAction, Action> = mutableMapOf()
+	override var id = Identificator.get()
 
 	fun deployBomb() = Bomb(Bomb.defaultFuse, x, y)
 
-	override fun getSnapshot() = listOf(this.snapshotSize(), hp, x, y)
+	override fun getSnapshot() = listOf(this.snapshotSize(), id, hp, x, y)
 
 	override fun setSnapshot(snapshot: List<Int>) {
-		hp = snapshot[1]
-		x = snapshot[2]
-		y = snapshot[3]
+		id = snapshot[1]
+		hp = snapshot[2]
+		x = snapshot[3]
+		y = snapshot[4]
 	}
 
 	override fun snapshotSize() = Bomber.snapshotSize()
 
 	companion object {
-		fun snapshotSize() = 3
+		fun snapshotSize() = 4
 	}
 }

@@ -3,8 +3,9 @@ package com.gogo.bakugejojo.game
 class Bomb(
 	var duration: Int,
 	var position: Position
-) : Snapshotable {
+) : Snapshotable, Identifiable {
 	var deployed: Int = 0
+	override var id = Identificator.get()
 
 	fun deploy(deployment: Int): Bomb {
 		deployed = deployment
@@ -17,14 +18,15 @@ class Bomb(
 		const val defaultFuse = 1000
 	}
 
-	override fun getSnapshot() = listOf(this.snapshotSize(), deployed, duration, position.x, position.y)
+	override fun getSnapshot() = listOf(this.snapshotSize(), id, deployed, duration, position.x, position.y)
 
 	override fun setSnapshot(snapshot: List<Int>) {
-		deployed = snapshot[1]
-		duration = snapshot[2]
-		position.x = snapshot[3]
-		position.y = snapshot[4]
+		id = snapshot[1]
+		deployed = snapshot[2]
+		duration = snapshot[3]
+		position.x = snapshot[4]
+		position.y = snapshot[5]
 	}
 
-	override fun snapshotSize() = 4
+	override fun snapshotSize() = 5
 }
