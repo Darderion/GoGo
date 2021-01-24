@@ -1,6 +1,4 @@
 
-const token = 1
-
 $.ajax("api/getToken", {
 	success: token => {
 		if (token === "-1") throw Error(`Invalid token : ${token}`)

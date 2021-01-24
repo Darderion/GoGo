@@ -35,23 +35,31 @@ class Server(
 		}
 	}
 
-	fun findLobby(filterFunction: (Lobby) -> Boolean): Lobby {
+	fun contains(lobby: Lobby) = lobbies.contains(lobby)
+	fun contains(player: Account) = players.contains(player)
+	fun contains(id: Int) = lobbies.any { it.id == id } || players.any { it.id == id }
+
+	fun getLobby(filterFunction: (Lobby) -> Boolean): Lobby {
 		val list = lobbies.filter(filterFunction)
-		if (list.isEmpty()) throw IndexOutOfBoundsException("No lobby found")
-		if (list.size > 1) throw NoSuchElementException("Found multiple lobbies satisfying a condition")
+		if (list.isEmpty()) throw NoSuchElementException("No lobby found")
+		if (list.size > 1) throw IndexOutOfBoundsException("Found multiple lobbies satisfying a condition")
 		return list.first()
 	}
+	fun getLobby(id: Int) = getLobby { it.id == id }
+	fun getLobby(player: Account) = getLobby { it.players.any { it.account == player } }
 
-	fun findLobby(lobbyId: Int) = findLobby { it.id == lobbyId }
+	fun findLobby(filterFunction: (Lobby) -> Boolean) = lobbies.firstOrNull(filterFunction)
+	fun findLobby(id: Int) = lobbies.firstOrNull { it.id == id }
+	fun findLobby(player: Account) = lobbies.firstOrNull { it.players.any { it.account == player } }
 
-	fun findLobby(player: Account) = findLobby { it.players.any { it.account == player } }
-
-	fun findPlayer(filterFunction: (Account) -> Boolean): Account {
+	fun getPlayer(filterFunction: (Account) -> Boolean): Account {
 		val list = players.filter(filterFunction)
-		if (list.isEmpty()) throw IndexOutOfBoundsException("No player found")
-		if (list.size > 1) throw NoSuchElementException("Found multiple players fitting a condition")
+		if (list.isEmpty()) throw NoSuchElementException("No player found")
+		if (list.size > 1) throw IndexOutOfBoundsException("Found multiple players fitting a condition")
 		return list.first()
 	}
+	fun getPlayer(id: Int) = getPlayer { it.id == id }
 
-	fun findPlayer(playerId: Int) = findPlayer { it.id == playerId }
+	fun findPlayer(filterFunction: (Account) -> Boolean) = players.firstOrNull(filterFunction)
+	fun findPlayer(id: Int) = players.firstOrNull { it.id == id }
 }

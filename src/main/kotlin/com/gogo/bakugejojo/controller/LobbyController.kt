@@ -34,8 +34,8 @@ class LobbyController {
 		@RequestParam character: String
 	) = try {
 		val characterVal = Character.valueOf(character)
-		val player = server.findPlayer(token)
-		val lobby = server.findLobby(player)
+		val player = server.getPlayer(token)
+		val lobby = server.getLobby(player)
 		if (lobby.gameStarted) throw Exception("GameStarted")
 		lobby.players.first { it.account == player }.character = characterVal
 		ResponseEntity("Response:${lobby.players.first { it.account == player }.character}", HttpStatus.OK)
@@ -43,7 +43,7 @@ class LobbyController {
 
 	@GetMapping("api/getLobbyInfo")
 	fun getLobbyInfo(@RequestParam lobbyId: Int) = try {
-		val lobby = server.findLobby(lobbyId)
+		val lobby = server.getLobby(lobbyId)
 		if (lobby.gameStarted) throw Exception("GameStarted")
 		ResponseEntity(lobby, HttpStatus.OK)
 	} catch (e: Exception) { ResponseEntity(null as Lobby?, HttpStatus.OK) }

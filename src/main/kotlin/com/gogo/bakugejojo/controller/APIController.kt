@@ -33,13 +33,17 @@ class APIController {
 	}
 
 	@GetMapping("api/getTokenURL")
-	fun getTokenURL(@RequestParam token: Int) = try {
+	fun getTokenURL(@RequestParam token: Int): ResponseEntity<String> {
 		val player = server.findPlayer { it.id == token }
+			?: return ResponseEntity("Err:NoPlayerWithToken{${token}}", HttpStatus.OK)
+
 		val lobby = server.findLobby(player)
-		if (lobby.gameStarted) throw Exception("GameStarted")
-		ResponseEntity(
-			"URL:lobby?token=${token}&lobby=${lobby.id}",
-			HttpStatus.OK
-		)
-	} catch (e: Exception) { ResponseEntity("Err:${e.message}", HttpStatus.OK) }
+			?: return ResponseEntity("URL:/", HttpStatus.OK)
+
+		return if (!lobby.gameStarted) {
+			ResponseEntity("URL:lobby?token=${token}&lobby=${lobby.id}", HttpStatus.OK)
+		} else {
+			ResponseEntity("URL:game?token=${token}&lobby=${lobby.id}", HttpStatus.OK)
+		}
+	}
 }
