@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.servlet.ModelAndView
 
 @Controller
 class GameController {
@@ -18,7 +19,11 @@ class GameController {
 	lateinit var server: Server
 
 	@GetMapping("/game")
-	fun game() = "game"
+	fun game(): ModelAndView {
+		val model = ModelAndView()
+		model.addObject("game", server.lobbies.first().game)
+		return model
+	}
 
 	@GetMapping("/api/update")
 	fun update(@RequestParam token: Int): ResponseEntity<Game> =

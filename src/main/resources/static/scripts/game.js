@@ -15,7 +15,6 @@ class BattleGround {
 
 		//-------------------------------------------------------------------------------
 		const wrapper = $('#battleGround')
-		wrapper.css('grid-template', `repeat(${rows}, auto) / repeat(${columns}, auto)`)
 		wrapper.height(rows * wrapper.width() / columns)
 		const tileHeight = `${wrapper.width() / columns}px`
 		for (let y = 0; y < rows; y++) {

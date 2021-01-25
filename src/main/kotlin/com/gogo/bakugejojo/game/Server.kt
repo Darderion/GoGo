@@ -4,7 +4,9 @@ import com.gogo.bakugejojo.game.bomber.Character
 import com.gogo.bakugejojo.game.bomber.Player
 import com.gogo.bakugejojo.game.lobby.Lobby
 import com.gogo.bakugejojo.game.lobby.LobbyPlayer
+import com.gogo.bakugejojo.game.map.EnumTile
 import com.gogo.bakugejojo.game.map.MapInfo
+import com.gogo.bakugejojo.game.map.Tile
 import org.springframework.stereotype.Component
 
 @Component
@@ -24,7 +26,7 @@ class Server(
 		if (lobbies.isEmpty()) {
 			lobbies.addAll(
 				listOf(
-					Lobby(0, MapInfo("Map Info", arrayOf()),
+					Lobby(0, MapInfo("Map Info", arrayOf(arrayOf(EnumTile.Empty), arrayOf(EnumTile.Empty))),
 						mutableListOf(
 							LobbyPlayer(players[0], character = Character.Jotaro),
 							LobbyPlayer(players[1], character = Character.Dio)
@@ -33,7 +35,7 @@ class Server(
 				)
 			)
 		}
-		lobbies.first().start()
+		// lobbies.first().start()
 	}
 
 	fun contains(lobby: Lobby) = lobbies.contains(lobby)

@@ -5,6 +5,8 @@ const lobby = $('#urlLobby').text();
 let players
 let characters
 
+let gameLoading = false
+
 // ----------------------------------------	// should be an ajax requests//-----------------------------------------------------------------
 
 const playerSelectors = {
@@ -42,8 +44,23 @@ const characterSelectionScreen = {
 	}
 }
 
+keyPressCharacter = {
+	get keys() {
+		return [ 'e' ]
+	},
+	handler: _ => {
+		$.ajax(`api/ready?token=${token}`, {
+			success: text => {
+				console.log(`Token: ${token}`)
+				console.log(text)
+			}
+		})
+	}
+}
+
 const keyPressHandlers = {
-	characterSelection: characterSelectionScreen.keyPressHandlers,
+	characterSelectionOnMove: characterSelectionScreen.keyPressHandlers,
+	characterSelectionOnSelect: keyPressCharacter
 }
 
 function initLobbyGuiStyles() {
@@ -160,9 +177,8 @@ document.addEventListener('keypress', event => {
 
 const lobbyInfoRequest = new Promise(resolve => {
 	$.ajax(`api/getLobbyInfo?lobbyId=${lobby}`, {
-		success: lobbyInfo => {
-			players = lobbyInfo.players
-			characters = Object.values(lobbyInfo.characters).map(characterName => imagesUrls.profileImages[characterName])
+		success: text => {
+			getLobbyInfo(text)
 			resolve()
 		}
 	})
@@ -180,6 +196,12 @@ lobbyInfoRequest.then(_ => {
 	setInterval(_ => {
 		$.ajax(`api/getLobbyInfo?lobbyId=${lobby}`, {
 			success: lobbyInfo => {
+				if (gameLoading) return
+				if (lobbyInfo.gameStarted) {
+					gameLoading = true
+					document.location.href = `game?token=${token}&lobby=${lobby}`
+					return
+				}
 				lobbyInfo.players.forEach(
 					(player, ind) => {
 						movePlayer(ind, player.character)
@@ -190,3 +212,8 @@ lobbyInfoRequest.then(_ => {
 		})
 	}, 10)
 })
+
+function getLobbyInfo(lobbyInfo) {
+	players = lobbyInfo.players
+	characters = Object.values(lobbyInfo.characters).map(characterName => imagesUrls.profileImages[characterName])
+}
