@@ -1,8 +1,6 @@
 package com.gogo.bakugejojo.controller
 
 import com.gogo.bakugejojo.game.Server
-import com.gogo.bakugejojo.game.bomber.Character
-import com.gogo.bakugejojo.game.lobby.Lobby
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -18,18 +16,10 @@ class APIController {
 	@Autowired
 	lateinit var server: Server
 
-	@PostMapping("/api/update")
-	fun update(): ResponseEntity<String> {
-		return ResponseEntity("someText", HttpStatus.OK)
-	}
-
 	@GetMapping("/api/getToken")
-	fun getToken(): ResponseEntity<String> {
+	fun getToken(): ResponseEntity<Int> {
 		id = (id + 1) % server.players.size
-		return ResponseEntity(
-			id.toString(),
-			HttpStatus.OK
-		)
+		return ResponseEntity(id, HttpStatus.OK)
 	}
 
 	@GetMapping("api/getTokenURL")

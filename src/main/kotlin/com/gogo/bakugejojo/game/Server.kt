@@ -33,6 +33,7 @@ class Server(
 				)
 			)
 		}
+		lobbies.first().start()
 	}
 
 	fun contains(lobby: Lobby) = lobbies.contains(lobby)
@@ -62,4 +63,9 @@ class Server(
 
 	fun findPlayer(filterFunction: (Account) -> Boolean) = players.firstOrNull(filterFunction)
 	fun findPlayer(id: Int) = players.firstOrNull { it.id == id }
+
+	fun findGame(playerId: Int) =
+		lobbies.firstOrNull {
+			it.players.any { it.account.id == playerId } && it.gameStarted && it.game != null
+		}?.game
 }

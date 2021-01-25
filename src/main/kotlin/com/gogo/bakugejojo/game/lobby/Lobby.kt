@@ -1,5 +1,6 @@
 package com.gogo.bakugejojo.game.lobby
 
+import com.gogo.bakugejojo.game.Account
 import com.gogo.bakugejojo.game.Game
 import com.gogo.bakugejojo.game.Position
 import com.gogo.bakugejojo.game.bomber.BomberInfo
@@ -24,7 +25,7 @@ class Lobby(
 	fun start() {
 		game = Game(
 			BattleMap(map),
-			players.map { Player(BomberInfo(it.account.name, it.character), 100, 0, 0) }
+			players.map { Player(BomberInfo(it.account.name, it.character), 100, 0, 0, it.account) }
 		)
 		gameStarted = true
 	}

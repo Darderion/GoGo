@@ -1,13 +1,14 @@
 package com.gogo.bakugejojo.game
 
 import com.gogo.bakugejojo.game.bomber.Bomber
+import com.gogo.bakugejojo.game.bomber.Player
 import com.gogo.bakugejojo.game.map.BattleMap
 import com.gogo.bakugejojo.game.map.Tile
 
 class Game(
 	val map: BattleMap,
-	private val bombers: List<Bomber>,
-	private val bombs: MutableList<Bomb> = mutableListOf()
+	val bombers: List<Bomber>,
+	val bombs: MutableList<Bomb> = mutableListOf()
 ) : Snapshotable {
 
 	fun restart() {
@@ -36,4 +37,11 @@ class Game(
 	}
 
 	override fun snapshotSize() = map.snapshotSize() + bombers.snapshotSize() + bombs.snapshotSize()
+
+	fun move(token: Int, dx: Int, dy: Int) {
+		bombers.filter { it is Player && it.account.id == token }.forEach {
+			it.x += dx
+			it.y += dy
+		}
+	}
 }
